@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Infix to Postfix Visual Converter</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥞</text></svg>">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="header-inner">
+    <div class="badge-pill">DSA Visual Learning Tool</div>
+    <h1>Infix to Postfix Visual Converter</h1>
+    <p class="lead">Convert mathematical expressions into Postfix (Reverse Polish Notation) and trace every Push, Pop, and Precedence decision on the Stack.</p>
+  </div>
+</header>
+
+<main>
+  <!-- Notation Overview Panel -->
+  <section class="panel intro-panel" aria-labelledby="notation-title">
+    <h2 id="notation-title">Notation Overview &amp; Concept</h2>
+    <div class="two-col">
+      <div class="col-box">
+        <h3>Infix Notation <span class="format-badge">Human Friendly</span></h3>
+        <p>Operators sit <em>between</em> their operands: <code>A + B * C</code>. To evaluate correctly, humans rely on implicit operator precedence rules (PEMDAS/BODMAS) and explicit parentheses <code>( )</code>.</p>
+      </div>
+      <div class="col-box">
+        <h3>Postfix Notation <span class="format-badge purple">Computer Friendly</span></h3>
+        <p>Also called <strong>Reverse Polish Notation (RPN)</strong>. Operators follow <em>after</em> their operands: <code>A B C * +</code>. Postfix eliminates parentheses entirely; an evaluation engine processes tokens linearly in one pass with a Stack.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Input Form Panel -->
+  <section class="panel input-panel" aria-labelledby="input-title">
+    <h2 id="input-title">Input Infix Expression</h2>
+    <form method="post" action="/convert" class="convert-form">
+      <label for="expr" class="input-label">Mathematical Infix Expression</label>
+      <div class="input-wrap">
+        <input id="expr" name="expr" type="text" value="{{expr}}" maxlength="{{maxlen}}" required autofocus autocomplete="off" spellcheck="false" placeholder="e.g. total + price * (quantity - 2)  or  (12 + 8) * 3">
+      </div>
+      
+      <div class="options-row">
+        <label class="check-label">
+          <input type="checkbox" name="implicit" value="1" {{checked}}>
+          <span>Allow implicit multiplication (e.g., <code>2(A+B)</code>, <code>(A+B)(C+D)</code>, <code>2x</code>)</span>
+        </label>
+      </div>
+
+      <div class="button-row">
+        <button class="btn btn-primary" type="submit">
+          <span class="btn-icon">&rarr;</span> Convert Expression
+        </button>
+        <button class="btn btn-secondary" type="submit" form="clear-form">
+          <span class="btn-icon">&#10005;</span> Clear
+        </button>
+      </div>
+    </form>
+    
+    <!-- Clear form navigates cleanly to root via GET -->
+    <form id="clear-form" action="/" method="get"></form>
+
+    <div class="examples-section">
+      <span class="examples-heading">Quick Example Expressions (click to test):</span>
+      <ul class="examples-list">{{examples}}</ul>
+    </div>
+  </section>
+
+  <!-- Dynamic Content: Results or Errors inserted here -->
+  {{content}}
+
+  <!-- Legend Panel -->
+  <section class="panel legend-panel" aria-labelledby="legend-title">
+    <h2 id="legend-title">Visual Legend &amp; Color Guide</h2>
+    <div class="legend-grid">
+      <div class="legend-item">
+        <span class="chip operand">A</span>
+        <div>
+          <strong>Operand (Variable / Number)</strong>
+          <p>Identifiers (<code>total</code>, <code>price</code>) and literals (<code>12</code>, <code>3.5</code>, <code>2.5e3</code>). Bypasses stack directly to output.</p>
+        </div>
+      </div>
+      <div class="legend-item">
+        <span class="chip op">+</span>
+        <div>
+          <strong>Operator</strong>
+          <p>Arithmetic (<code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>%</code>, <code>^</code>) and unary (<code>u+</code>, <code>u-</code>). Stays on stack until precedence demands popping.</p>
+        </div>
+      </div>
+      <div class="legend-item">
+        <span class="chip paren">( )</span>
+        <div>
+          <strong>Parentheses</strong>
+          <p>Explicit grouping. <code>(</code> is pushed to stack; <code>)</code> triggers popping of operators back to <code>(</code>.</p>
+        </div>
+      </div>
+      <div class="legend-item">
+        <span class="tag push">Push</span>
+        <div>
+          <strong>Stack Push Operation</strong>
+          <p>Adds an operator or left parenthesis onto the top of the stack (LIFO insertion).</p>
+        </div>
+      </div>
+      <div class="legend-item">
+        <span class="tag pop">Pop</span>
+        <div>
+          <strong>Stack Pop Operation</strong>
+          <p>Removes the top operator from the stack and appends it to the postfix output stream.</p>
+        </div>
+      </div>
+      <div class="legend-item">
+        <span class="tag output">Output</span>
+        <div>
+          <strong>Output Append</strong>
+          <p>Directly appends an incoming operand to the postfix token list without touching the stack.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Algorithm & DSA Complexity Panel -->
+  <section class="panel algo-panel" aria-labelledby="algo-title">
+    <h2 id="algo-title">Shunting-Yard Algorithm &amp; DSA Complexity</h2>
+    
+    <div class="algo-explanation">
+      <p>The conversion is based on Edsger Dijkstra’s <strong>Shunting-Yard Algorithm</strong>, utilizing a <strong>Stack (Last-In, First-Out)</strong> data structure to reorder operators according to priority and associativity:</p>
+      
+      <ol class="algo-steps">
+        <li><strong>Operands:</strong> When a number or variable identifier is scanned, append it directly to the postfix output.</li>
+        <li><strong>Left Parenthesis <code>(</code>:</strong> Push onto the stack to establish a new grouping boundary.</li>
+        <li><strong>Unary Operators (<code>u+</code>, <code>u-</code>):</strong> Right-associative with precedence 3. Push immediately onto the stack.</li>
+        <li><strong>Right Parenthesis <code>)</code>:</strong> Repeatedly pop operators from the stack and append them to output until a matching <code>(</code> is reached. Discard the <code>(</code>.</li>
+        <li><strong>Binary Operators:</strong> While the operator at the stack top has higher precedence than the scanned operator, OR equal precedence and the scanned operator is left-associative, pop the top operator to output. Then push the incoming operator.</li>
+        <li><strong>End of Input:</strong> Pop all remaining operators from the stack onto the postfix output stream.</li>
+      </ol>
+    </div>
+
+    <div class="precedence-table-wrap">
+      <h3>Operator Precedence &amp; Associativity Reference</h3>
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th scope="col">Precedence Level</th>
+            <th scope="col">Operators</th>
+            <th scope="col">Associativity</th>
+            <th scope="col">Role &amp; Evaluation Direction</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Level 4 (Highest)</strong></td>
+            <td><code>^</code></td>
+            <td>Right-to-Left</td>
+            <td>Exponentiation (e.g. <code>2^3^2 = 2^(3^2) = 512</code>)</td>
+          </tr>
+          <tr>
+            <td><strong>Level 3</strong></td>
+            <td><code>u+</code>, <code>u-</code></td>
+            <td>Right-to-Left</td>
+            <td>Unary Plus and Minus (e.g. <code>-A + B</code> &rarr; <code>A u- B +</code>)</td>
+          </tr>
+          <tr>
+            <td><strong>Level 2</strong></td>
+            <td><code>*</code>, <code>/</code>, <code>%</code></td>
+            <td>Left-to-Right</td>
+            <td>Multiplication, True Division, Modulus</td>
+          </tr>
+          <tr>
+            <td><strong>Level 1 (Lowest)</strong></td>
+            <td><code>+</code>, <code>-</code></td>
+            <td>Left-to-Right</td>
+            <td>Binary Addition and Subtraction</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="complexity-box">
+      <h3>Complexity Analysis</h3>
+      <ul>
+        <li><strong>Time Complexity: \(O(N)\)</strong> &mdash; Every token is pushed to the stack at most once and popped at most once. Linear scanning over \(N\) tokens yields optimal \(O(N)\) running time.</li>
+        <li><strong>Space Complexity: \(O(N)\)</strong> &mdash; The operator stack stores at most \(N\) operators in the worst case (e.g., deeply nested parentheses or ascending precedence), and the output buffer stores \(N\) tokens.</li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p>Infix to Postfix Visual Converter &bull; Built with standard Python <code>http.server</code>, semantic HTML5, and CSS3.</p>
+    <p class="muted">No external frameworks &bull; Zero JavaScript &bull; Mathematical rearrangement only (no <code>eval()</code> / <code>exec()</code>).</p>
+  </div>
+</footer>
+</body>
+</html>

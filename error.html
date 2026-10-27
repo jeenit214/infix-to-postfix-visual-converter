@@ -1,0 +1,22 @@
+<section class="panel error-panel" role="alert" aria-labelledby="e-title">
+  <div class="panel-header">
+    <h2 id="e-title"><span class="err-icon">&#9888;</span> Expression Validation Error</h2>
+    <span class="badge danger">Syntax Error</span>
+  </div>
+  <div class="error-body">
+    <div class="error-banner">
+      <span class="err-lead">Error:</span> {{message}}
+    </div>
+    
+    <div class="error-guidance">
+      <h3>How to resolve this:</h3>
+      <ul>
+        <li><strong>Consecutive operators:</strong> Multiple binary operators in sequence (such as <code>A++B</code> or <code>A*/B</code>) are not valid arithmetic. If you intended a unary sign, wrap it in parentheses: <code>A + (+B)</code> or <code>A * (-B)</code>.</li>
+        <li><strong>Missing operands:</strong> Ensure operators have operands on both sides. Expressions cannot end with an operator (like <code>A+</code>) or start with a binary operator (like <code>*A</code>).</li>
+        <li><strong>Parentheses balance:</strong> Every opening parenthesis <code>(</code> must have a corresponding closing parenthesis <code>)</code>, and empty parentheses <code>()</code> are disallowed.</li>
+        <li><strong>Implicit multiplication:</strong> If writing algebraic terms like <code>2(A+B)</code>, <code>(A+B)(C+D)</code>, or <code>2x</code>, ensure the &ldquo;Allow implicit multiplication&rdquo; checkbox is enabled. Otherwise, write explicit multiplication operators: <code>2*(A+B)</code>.</li>
+      </ul>
+      <p class="muted">Correct your expression in the input box above and click <strong>Convert Expression</strong> to retry.</p>
+    </div>
+  </div>
+</section>

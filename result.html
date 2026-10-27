@@ -1,0 +1,70 @@
+<!-- Result Section: Infix and Postfix Expressions -->
+<section class="panel result-overview-panel" aria-labelledby="r-in">
+  <div class="panel-header">
+    <h2 id="r-in">1. Original Infix Expression</h2>
+    <span class="badge info">{{token_count}} Tokens Parsed</span>
+  </div>
+  <div class="expr-card">
+    <p class="expr-text">{{infix}}</p>
+  </div>
+  <div class="tokens-breakdown">
+    <span class="breakdown-title">Token Classification:</span>
+    <div class="tokens-list" aria-label="Classified Tokens">{{tokens}}</div>
+  </div>
+</section>
+
+<section class="panel result-final-panel" aria-labelledby="r-out">
+  <div class="panel-header">
+    <h2 id="r-out">2. Final Postfix Expression (RPN)</h2>
+    <span class="badge success">Conversion Successful</span>
+  </div>
+  <div class="expr-card highlight">
+    <p class="expr-text big">{{postfix}}</p>
+  </div>
+  <p class="result-annotation">
+    <strong>Evaluation note:</strong> In postfix notation, operators immediately follow their respective operands. Parentheses are completely unnecessary, and evaluation requires only a single stack pass.
+  </p>
+</section>
+
+<!-- Step-by-Step Conversion Table -->
+<section class="panel table-panel" aria-labelledby="r-steps">
+  <div class="panel-header">
+    <h2 id="r-steps">3. Step-by-Step Conversion Trace</h2>
+    <span class="badge purple">{{step_count}} Steps Generated</span>
+  </div>
+  <p class="section-desc">
+    Below is the complete trace showing the state of the algorithm after scanning each token. Stack items are presented from <strong>Bottom to Top</strong>:
+  </p>
+  <div class="table-wrap">
+    <table class="trace-table">
+      <thead>
+        <tr>
+          <th scope="col" class="th-step">Step</th>
+          <th scope="col" class="th-token">Scanned Token</th>
+          <th scope="col" class="th-op">Operation &amp; DSA Rationale</th>
+          <th scope="col" class="th-stack">Stack (Bottom to Top)</th>
+          <th scope="col" class="th-output">Postfix Output Stream</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{rows}}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Visual Stack Vessel Timeline -->
+<section class="panel stack-panel" aria-labelledby="r-stack">
+  <div class="panel-header">
+    <h2 id="r-stack">4. Visual Stack Representation (State After Each Step)</h2>
+    <span class="badge info">LIFO Stack Inspector</span>
+  </div>
+  <p class="section-desc">
+    Physical visualization of the stack container at every step. Blocks sit vertically inside the vessel with the <strong>Bottom</strong> at the base and the <strong>Top</strong> at the opening:
+  </p>
+  <div class="stack-strip-wrapper">
+    <div class="stack-strip">
+      {{cards}}
+    </div>
+  </div>
+</section>
