@@ -35,13 +35,7 @@ Open your web browser and navigate to:
 http://127.0.0.1:8000
 ```
 
-#### Run the Unit Test Suite:
-```bash
-cd infix_postfix_visualizer
-python -m unittest -v test_converter.py
-```
 
----
 
 ## File Structure
 
@@ -50,7 +44,6 @@ infix_postfix_visualizer/
 │
 ├── server.py              # HTTP server (ThreadingHTTPServer), routing, HTML escaping & security
 ├── converter.py           # Tokenizer, syntax validator, stack conversion engine & step generator
-├── test_converter.py      # Comprehensive test suite (34 unit tests using unittest)
 ├── README.md              # Documentation, technical specs, and complete project report
 │
 ├── templates/
